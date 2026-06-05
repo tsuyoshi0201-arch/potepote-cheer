@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ぽてぽて運動応援</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(160deg, #1a3a0a 0%, #2d5016 50%, #1a2f0a 100%);
+      min-height: 100vh;
+      font-family: 'Hiragino Maru Gothic Pro', 'BIZ UDPGothic', sans-serif;
+      color: #E8F5E9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 40px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '🌲🌿🌲🍃🌲🌿🌲🍃🌲🌿🌲🍃🌲🌿🌲';
+      position: fixed;
+      bottom: 0; left: 0; width: 100%;
+      font-size: 2rem; letter-spacing: 4px;
+      opacity: 0.22; pointer-events: none; text-align: center;
+    }
+
+    /* ===== タイトル ===== */
+    #title {
+      font-size: 1.8rem; font-weight: bold;
+      color: #A5D6A7;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      padding: 24px 0 6px; letter-spacing: 2px;
+      text-align: center;
+    }
+
+    #subtitle {
+      font-size: 0.85rem; color: #81C784;
+      margin-bottom: 28px; opacity: 0.85;
+    }
+
+    /* ===== カード ===== */
+    #card {
+      width: min(420px, 92vw);
+      background: rgba(0,0,0,0.38);
+      border: 1px solid #A5D6A7;
+      border-radius: 24px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* ===== ぽてぽてエリア ===== */
+    #chara-area {
+      width: 200px; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+
+    #chara-img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+      display: none;
+      animation: charaIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    #chara-placeholder {
+      font-size: 6rem;
+      opacity: 0.35;
+    }
+
+    @keyframes charaIn {
+      from { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+      to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
+    }
+
+    /* ===== コメントボックス ===== */
+    #comment-box {
+      width: 100%;
+      min-height: 80px;
+      background: rgba(165,214,167,0.12);
+      border: 1px solid #A5D6A7;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #comment-type {
+      font-size: 0.78rem;
+      letter-spacing: 2px;
+      color: #A5D6A7;
+      font-weight: bold;
+    }
+
+    #comment-text {
+      font-size: 1.1rem;
+      color: #E8F5E9;
+      line-height: 1.7;
+      font-weight: bold;
+    }
+
+    /* ===== ボタンエリア ===== */
+    #btn-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cheer-btn {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 2px solid;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .cheer-btn:active { transform: scale(0.96); }
+
+    /* やった！ */
+    #btn-did {
+      background: rgba(129,199,132,0.18);
+      border-color: #81C784;
+      color: #81C784;
+    }
+    #btn-did:hover { background: rgba(129,199,132,0.35); box-shadow: 0 4px 16px rgba(129,199,132,0.25); }
+
+    /* ちょっとやった */
+    #btn-little {
+      background: rgba(255,213,79,0.15);
+      border-color: #FFD54F;
+      color: #FFD54F;
+    }
+    #btn-little:hover { background: rgba(255,213,79,0.3); box-shadow: 0 4px 16px rgba(255,213,79,0.2); }
+
+    /* できなかった */
+    #btn-nope {
+      background: rgba(239,154,154,0.15);
+      border-color: #EF9A9A;
+      color: #EF9A9A;
+    }
+    #btn-nope:hover { background: rgba(239,154,154,0.3); box-shadow: 0 4px 16px rgba(239,154,154,0.2); }
+
+    /* ===== 日付表示 ===== */
+    #date-label {
+      font-size: 0.78rem;
+      color: #66BB6A;
+      opacity: 0.8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div id="title">🌿 ぽてぽて運動応援 🌿</div>
+<div id="subtitle">今日の運動はどうだった？</div>
+
+<div id="card">
+
+  <!-- 日付 -->
+  <div id="date-label" id="date-label"></div>
+
+  <!-- ぽてぽてキャラ -->
+  <div id="chara-area">
+    <div id="chara-placeholder">🐾</div>
+    <img id="chara-img" alt="ぽてぽて">
+  </div>
+
+  <!-- コメント -->
+  <div id="comment-box">
+    <div id="comment-type"></div>
+    <div id="comment-text"></div>
+  </div>
+
+  <!-- ボタン -->
+  <div id="btn-area">
+    <button class="cheer-btn" id="btn-did"    onclick="showCheer('did')">
+      🏃 やったよ！
+    </button>
+    <button class="cheer-btn" id="btn-little" onclick="showCheer('little')">
+      🐾 ちょっとやったよ
+    </button>
+    <button class="cheer-btn" id="btn-nope"   onclick="showCheer('nope')">
+      😴 できなかったな
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // ==================================================
+  // 画像設定（画像ができたら true に変える）
+  // ==================================================
+  const USE_IMAGES = true;
+  // images/did_1.png 〜 did_3.png
+  // images/little_1.png 〜 little_3.png
+  // images/nope_1.png 〜 nope_3.png
+
+  // ==================================================
+  // コンテンツ定義
+  // ==================================================
+  const CONTENT = {
+    did: {
+      label: '🏃 やったよ！',
+      comments: [
+        'すごい！！今日もやりきったね🌟\nぽてぽても嬉しいよ〜！',
+        'えらい！！その調子でいこう🌿\n明日もいっしょにがんばろう！',
+        'やったね〜！🎉\n体が喜んでるよ！最高！',
+        '運動できたね！かっこいい！\nぽてぽても応援してるよ🐾',
+        'その積み重ねが大事なんだよ〜🌿\n今日も一歩前進！すごい！',
+      ],
+      images: ['did_1.png', 'did_2.png', 'did_3.png'],
+    },
+    little: {
+      label: '🐾 ちょっとやったよ',
+      comments: [
+        'ちょっとでもやったのはすごいよ！\n動いた自分を褒めてね🌿',
+        'やった！ちょっとでも動けたね🐾\n続けることが一番大事だよ！',
+        '少しでもやったなら十分！\nぽてぽてはちゃんと見てたよ🌟',
+        'ちょっとやったが積み重なると\n大きな力になるんだよ〜🌿',
+        '完璧じゃなくていい！\n動こうとした気持ちがえらい🐾',
+      ],
+      images: ['little_1.png', 'little_2.png', 'little_3.png'],
+    },
+    nope: {
+      label: '😴 できなかったな',
+      comments: [
+        '大丈夫！休むのも大事だよ🌿\n明日ちょっとだけ動いてみよう！',
+        'そういう日もあるよ〜🐾\nぽてぽては怒ってないよ！',
+        '休息も立派な体づくり！\n今日はゆっくり休んでね🌙',
+        'むりしなくていいよ！\n明日またいっしょにがんばろう🐾',
+        '今日は体が「やすんで」って\n言ってたのかも🌿やさしくしてあげてね！',
+      ],
+      images: ['nope_1.png', 'nope_2.png', 'nope_3.png'],
+    },
+  };
+
+  // ==================================================
+  // 日付表示
+  // ==================================================
+  const now = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('date-label').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）`;
+
+  // ==================================================
+  // メイン処理
+  // ==================================================
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function showCheer(type) {
+    const data    = CONTENT[type];
+    const comment = pickRandom(data.comments);
+    const imgFile = pickRandom(data.images);
+
+    // コメント表示
+    const box = document.getElementById('comment-box');
+    box.style.display = 'none';
+    void box.offsetWidth; // アニメーションリセット
+    box.style.display = 'flex';
+    document.getElementById('comment-type').textContent = data.label;
+    document.getElementById('comment-text').textContent = comment;
+
+    // キャラ画像
+    const placeholder = document.getElementById('chara-placeholder');
+    const img         = document.getElementById('chara-img');
+
+    if (USE_IMAGES) {
+      img.style.display = 'none';
+      img.onload = () => {
+        placeholder.style.display = 'none';
+        img.style.display = 'block';
+        // アニメーションリセット
+        img.style.animation = 'none';
+        void img.offsetWidth;
+        img.style.animation = '';
+      };
+      img.onerror = () => {
+        placeholder.style.display = 'block';
+        img.style.display = 'none';
+      };
+      img.src = `images/${imgFile}?t=${Date.now()}`;
+    } else {
+      // 画像なし時：絵文字で代用
+      const emojis = {
+        did:    ['🏃','💪','🌟'],
+        little: ['🐾','🌿','😊'],
+        nope:   ['😴','🌙','🛌'],
+      };
+      placeholder.textContent = pickRandom(emojis[type]);
+      placeholder.style.display  = 'block';
+      placeholder.style.opacity  = '1';
+      img.style.display = 'none';
+    }
+
+    // ボタンのハイライト
+    document.querySelectorAll('.cheer-btn').forEach(btn => {
+      btn.style.transform = '';
+    });
+  }
+</script>
+</body>
+</html>
