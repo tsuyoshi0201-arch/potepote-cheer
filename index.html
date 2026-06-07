@@ -184,7 +184,7 @@
 
     #memo-input {
       width: 100%;
-      min-height: 90px;
+      min-height: 160px;
       background: rgba(255,255,255,0.06);
       border: 1px solid #A5D6A7;
       border-radius: 12px;
@@ -204,27 +204,6 @@
       background: rgba(255,255,255,0.1);
     }
 
-    #memo-save-btn {
-      align-self: flex-end;
-      padding: 8px 20px;
-      border-radius: 10px;
-      border: 1px solid #A5D6A7;
-      background: rgba(165,214,167,0.15);
-      color: #A5D6A7;
-      font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    #memo-save-btn:hover { background: rgba(165,214,167,0.3); }
-
-    #memo-saved-msg {
-      font-size: 0.78rem;
-      color: #81C784;
-      text-align: right;
-      min-height: 1rem;
-    }
 
     #reset-btn {
       align-self: center;
@@ -292,8 +271,6 @@
   <div id="memo-area">
     <div id="memo-label">📝 今日の運動メモ</div>
     <textarea id="memo-input" placeholder="例）ウォーキング30分・ストレッチした など"></textarea>
-    <button id="memo-save-btn" onclick="saveMemo()">保存する 🌿</button>
-    <div id="memo-saved-msg"></div>
     <button id="reset-btn" onclick="resetCheer()">🔄 やりなおす</button>
   </div>
 
@@ -420,23 +397,13 @@
     memoArea.style.display = 'none';
     void memoArea.offsetWidth;
     memoArea.style.display = 'flex';
-    document.getElementById('memo-input').style.minHeight = '180px';
+    document.getElementById('memo-input').style.minHeight = '240px';
 
-    // 保存済みメモを復元
-    const today     = getTodayKey();
-    const savedMemo = localStorage.getItem(`potepote-memo-${today}`) || '';
-    document.getElementById('memo-input').value   = savedMemo;
-    document.getElementById('memo-saved-msg').textContent = savedMemo ? '📝 前回のメモを表示中' : '';
+    // メモ欄を空にする
+    document.getElementById('memo-input').value = '';
   }
 
   // ==================================================
-  // メモ保存（LocalStorage）
-  // ==================================================
-  function getTodayKey() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-  }
-
   function resetCheer() {
     // ボタンを再表示
     document.getElementById('btn-area').style.display = 'flex';
@@ -449,20 +416,6 @@
     document.getElementById('chara-placeholder').style.opacity = '0.35';
   }
 
-  function saveMemo() {
-    const text = document.getElementById('memo-input').value.trim();
-    const today = getTodayKey();
-    if (text) {
-      localStorage.setItem(`potepote-memo-${today}`, text);
-      document.getElementById('memo-saved-msg').textContent = '✅ 保存しました！';
-    } else {
-      localStorage.removeItem(`potepote-memo-${today}`);
-      document.getElementById('memo-saved-msg').textContent = 'メモを削除しました';
-    }
-    setTimeout(() => {
-      document.getElementById('memo-saved-msg').textContent = '';
-    }, 2500);
-  }
 </script>
 </body>
 </html>
